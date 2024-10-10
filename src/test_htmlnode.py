@@ -6,7 +6,6 @@ class TestHtmlNode(unittest.TestCase):
     def test_props(self):
         tmp = HTMLNode("h1", "Titleee", [HTMLNode("p")], {"href": "https://google.de",})
         htm = tmp.props_to_html()
-        print(htm)
         self.assertEqual(htm, ' href="https://google.de"')
 
     def test_repr(self):
@@ -18,6 +17,5 @@ class TestHtmlNode(unittest.TestCase):
     def test_props2(self):
         tmp = HTMLNode("h1", "Titleee", [HTMLNode("p")], {"href": "https://google.de", "target": "blank", "animal": "cat"})
         htm = tmp.props_to_html()
-        print(htm)
         self.assertEqual(htm, ' href="https://google.de" target="blank" animal="cat"')
 
