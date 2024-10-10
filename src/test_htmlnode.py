@@ -34,5 +34,38 @@ class TestHtmlNode(unittest.TestCase):
         tst = LeafNode("Hello za worldo!", None)
         self.assertEqual("Hello za worldo!", tst.to_html())
 
+    def test_parent_with_leafs_only(self):
+        node = ParentNode(
+    "p",
+    [
+        LeafNode("Bold text", "b"),
+        LeafNode("Normal text", None),
+        LeafNode("italic text", "i"),
+        LeafNode("Normal text", None),
+    ],
+    )
+
+        self.assertEqual(node.to_html(),"<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")
+
+
+    def test_parent_with_other_parents(self):
+        node = ParentNode(
+    "div",
+    [
+        ParentNode("div",[
+        LeafNode("Bold text", "b"),
+        LeafNode("Normal text", None),
+        LeafNode("italic text", "i"),
+        LeafNode("Normal text", None),]
+        , {"class": "container"})
+    ]
+    )
+
+        self.assertEqual(node.to_html(),'<div><div class="container"><b>Bold text</b>Normal text<i>italic text</i>Normal text</div></div>'
+                         )
+
+
+
+
 if __name__ == "__main__":
     unittest.main()
