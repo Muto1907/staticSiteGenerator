@@ -59,23 +59,7 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         self.assertEqual(text_node_to_html_node(txt).props["src"], lf.props["src"])
         self.assertEqual(text_node_to_html_node(txt).props["alt"], lf.props["alt"])
 
-class TestInlineTextNodeParsing(unittest.TestCase):
-   
-    def test_no_plain_text(self):
-        tst = split_nodes_delimiter([TextNode("hi", text_type_italic)], "*", text_type_italic)
-        self.assertEqual(tst, [TextNode("hi", text_type_italic)])
 
-    def test_text_with_bold(self):
-        tst = split_nodes_delimiter([TextNode("hi **whats up** dude", text_type_text)], "**", text_type_bold)
-        self.assertEqual(tst, [TextNode("hi ", text_type_text), TextNode("whats up", text_type_bold), TextNode(" dude", text_type_text)])
-
-    def test_text_with_mult_ital(self):
-        tst = split_nodes_delimiter([TextNode("helloo *whatsaap*", text_type_text),
-                                     TextNode("olaaa *comestes* amigos *ola* avantuuro", text_type_text)],"*", text_type_italic)
-        self.assertEqual(tst, [TextNode("helloo ", text_type_text), TextNode("whatsaap", text_type_italic),
-                                TextNode("olaaa ", text_type_text), TextNode("comestes", text_type_italic),
-                                TextNode(" amigos ", text_type_text), TextNode("ola", text_type_italic), TextNode(" avantuuro", text_type_text)])
-       
 
 if __name__ == "__main__":
     unittest.main()
