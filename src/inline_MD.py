@@ -31,3 +31,49 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     result = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     return result
+
+def split_nodes_image(old_nodes):
+    result = []
+    for node in old_nodes:
+        if node.text_type != text_type_text:
+            result.append(node)
+            continue    
+        props = extract_markdown_images(node.text)
+        if props == []:
+            result.append(node)
+            continue
+        txt = node.text
+        for alt, src in props:
+            splt = txt.split(f"![{alt}]({src})", 1)
+            if len(splt) != 2:
+                raise ValueError("Markdown Syntax Error, unclosed image tag")
+            if splt[0] != "":
+                result.append(TextNode(splt[0], text_type_text))
+            result.append(TextNode(alt, text_type_image, src))
+            txt = splt[1]
+        if txt != "":
+            result.append(TextNode(txt, text_type_text))
+    return result
+
+def split_nodes_link(old_nodes):
+    result = []
+    for node in old_nodes:
+        if node.text_type != text_type_text:
+            result.append(node)
+            continue     
+        props = extract_markdown_links(node.text)
+        if props == []:
+            result.append(node)
+            continue 
+        txt = node.text
+        for alt, src in props:
+            splt = txt.split(f"[{alt}]({src})", 1)
+            if len(splt) != 2:
+                raise ValueError("Markdown Syntax Error, unclosed link tag")
+            if splt[0] != "":
+                result.append(TextNode(splt[0], text_type_text))
+            result.append(TextNode(alt, text_type_link, src))
+            txt = splt[1]
+        if txt != "":
+            result.append(TextNode(txt, text_type_text))
+    return result

@@ -35,6 +35,7 @@ class TestInlineTextNodeParsing(unittest.TestCase):
 class TestMarkdownExtraction(unittest.TestCase):
     def test_image(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        print(extract_markdown_images(text))
         self.assertEqual(extract_markdown_images(text), [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")] )
         # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
 
@@ -42,3 +43,39 @@ class TestMarkdownExtraction(unittest.TestCase):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         self.assertEqual(extract_markdown_links(text), [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])
         # [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+
+    def test_split_img(self):
+        node = TextNode(
+        "This is text with an image ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)",
+        text_type_text,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(new_nodes, [
+            TextNode("This is text with an image ", text_type_text),
+            TextNode("to boot dev", text_type_image, "https://www.boot.dev"),
+            TextNode(" and ", text_type_text),
+            TextNode(
+            "to youtube", text_type_image, "https://www.youtube.com/@bootdotdev"
+            ),
+            ])
+    
+    def test_split_link(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            text_type_text,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(new_nodes,
+            [
+            TextNode("This is text with a link ", text_type_text),
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+            TextNode(" and ", text_type_text),
+            TextNode(
+                "to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"
+            ), 
+            ]
+        )
+    def test_split_plain(self):
+        node = TextNode("only text", text_type_text)
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(new_nodes, [node])
