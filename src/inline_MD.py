@@ -1,4 +1,6 @@
 from textnode import *
+import re
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     if delimiter not in ['*', '**', '`',]:
         raise Exception("Markdown Syntax Exception: Invalid choice of Delimiter")
@@ -21,3 +23,11 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         else:
             new_nodes.append(node)
     return new_nodes
+
+def extract_markdown_images(text):
+    result = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return result
+
+def extract_markdown_links(text):
+    result = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    return result
