@@ -79,3 +79,32 @@ class TestMarkdownExtraction(unittest.TestCase):
         node = TextNode("only text", text_type_text)
         new_nodes = split_nodes_link([node])
         self.assertEqual(new_nodes, [node])
+
+    def test_text_to_textnodes(self):
+        st = "Hi *This* is **Harold** `what is up`"
+        res = text_to_textnodes(st)
+        self.assertEqual(res, [
+            TextNode("Hi ", text_type_text),
+            TextNode("This", text_type_italic),
+            TextNode(" is ", text_type_text),
+            TextNode("Harold", text_type_bold),
+            TextNode(" ", text_type_text),
+            TextNode("what is up", text_type_code)
+        ])
+    
+    def test_text_to_textnodes_boot_dev_example(self):
+        st = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        res = text_to_textnodes(st)
+        self.assertEqual(res, [
+            TextNode("This is ", text_type_text),
+            TextNode("text", text_type_bold),
+            TextNode(" with an ", text_type_text),
+            TextNode("italic", text_type_italic),
+            TextNode(" word and a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" and an ", text_type_text),
+            TextNode("obi wan image", text_type_image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", text_type_text),
+            TextNode("link", text_type_link, "https://boot.dev"),
+        ])
+    
