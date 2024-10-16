@@ -1,3 +1,7 @@
+from htmlnode import *
+from textnode import *
+from inline_MD import *
+
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
 block_type_code = "code"
@@ -31,9 +35,14 @@ def block_to_block_type(markdown):
             if line[0] != ">":
                 return block_type_paragraph
         return block_type_quote
-    if markdown[:2] == "* " or markdown[:2] == "- ":
+    if markdown.startswith("* "):
         for line in lines:
-            if line[:2] != "* " and line[:2] != "- ":
+            if not line.startswith("* "):
+                return block_type_paragraph
+        return block_type_ulist
+    if markdown.startswith("- "):
+        for line in lines:
+            if not line.startswith("- "):
                 return block_type_paragraph
         return block_type_ulist
     if markdown[:3] == "1. ":
@@ -42,3 +51,61 @@ def block_to_block_type(markdown):
                 return block_type_paragraph
         return block_type_olist
     return block_type_paragraph
+
+def markdown_to_html_node(markdown):
+    div = ParentNode("div", [])
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        type = block_to_block_type(block)
+        html_block_node = create_html_node_block(block, type)
+        div.children.append(html_block_node)
+    return div
+
+def create_html_node_block(markdown, type):
+    if type == block_type_paragraph:
+        return ParentNode("p", text_to_children(" ".join(markdown.split("\n"))))
+    if type == block_type_heading:
+        if markdown.startswith("###### "):
+            return ParentNode("h6", text_to_children(markdown[7:])) 
+        if markdown.startswith("##### "):
+            return ParentNode("h5", text_to_children(markdown[6:]))
+        if markdown.startswith("#### "):
+            return ParentNode("h4", text_to_children(markdown[5:]))
+        if markdown.startswith("### "):
+            return ParentNode("h3", text_to_children(markdown[4:]))
+        if markdown.startswith("## "):
+            return ParentNode("h2", text_to_children(markdown[3:]))
+        if markdown.startswith("# "):
+            return ParentNode("h1", text_to_children(markdown[2:]))
+    if type == block_type_code:
+        return ParentNode("pre", ParentNode("code", text_to_children(markdown[3:-3])))
+    if type == block_type_olist:
+        items = markdown.split("\n")
+        html_items = []
+        for item in items:
+            text = item[3:]
+            children = text_to_children(text)
+            html_items.append(ParentNode("li", children))
+        return ParentNode("ol", html_items)
+    if type == block_type_quote:
+        lines = markdown.split("\n")
+        for i in range(len(lines)):
+            lines[i] = lines[i].lstrip(">").strip()
+        lines = " ".join(lines)
+        return ParentNode("blockquote", text_to_children(lines))
+    if type == block_type_ulist:
+        items = markdown.split("\n")
+        html_items = []
+        for item in items:
+            text = item[2:]
+            children = text_to_children(text)
+            html_items.append(ParentNode("li", children))
+        return ParentNode("ul", html_items)
+    raise ValueError("Invalid Block Type")
+    
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    res = []
+    for node in text_nodes:
+        res.append(text_node_to_html_node(node))
+    return res
