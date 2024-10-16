@@ -30,9 +30,9 @@ def block_to_block_type(markdown):
             return block_type_paragraph
     if markdown[:3] == "```" and markdown[-3:] == "```" and len(lines) > 1:
         return block_type_code
-    if markdown[0] == ">":
+    if markdown.strip().startswith(">"):
         for line in lines:
-            if line[0] != ">":
+            if not line.strip().startswith(">"):
                 return block_type_paragraph
         return block_type_quote
     if markdown.startswith("* "):
@@ -89,10 +89,11 @@ def create_html_node_block(markdown, type):
         return ParentNode("ol", html_items)
     if type == block_type_quote:
         lines = markdown.split("\n")
+        new_lines = []
         for i in range(len(lines)):
-            lines[i] = lines[i].lstrip(">").strip()
-        lines = " ".join(lines)
-        return ParentNode("blockquote", text_to_children(lines))
+            new_lines.append(lines[i].strip().lstrip(">").strip())
+        content = " ".join(new_lines)
+        return ParentNode("blockquote", text_to_children(content))
     if type == block_type_ulist:
         items = markdown.split("\n")
         html_items = []

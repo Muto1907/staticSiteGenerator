@@ -175,7 +175,7 @@ this is paragraph text
             "<div><h1>this is an h1</h1><p>this is paragraph text</p><h2>this is an h2</h2></div>",
         )
 
-        def test_blockquote(self):
+    def test_blockquote(self):
             md = """
     > This is a
     > blockquote block
