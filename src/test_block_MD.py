@@ -177,8 +177,8 @@ this is paragraph text
 
     def test_blockquote(self):
             md = """
-    > This is a
-    > blockquote block
+> This is a
+> blockquote block
 
     this is paragraph text
 

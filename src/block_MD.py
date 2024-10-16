@@ -91,7 +91,7 @@ def create_html_node_block(markdown, type):
         lines = markdown.split("\n")
         new_lines = []
         for i in range(len(lines)):
-            new_lines.append(lines[i].strip().lstrip(">").strip())
+            new_lines.append(lines[i].lstrip(">").strip())
         content = " ".join(new_lines)
         return ParentNode("blockquote", text_to_children(content))
     if type == block_type_ulist:
