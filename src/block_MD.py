@@ -78,7 +78,7 @@ def create_html_node_block(markdown, type):
         if markdown.startswith("# "):
             return ParentNode("h1", text_to_children(markdown[2:]))
     if type == block_type_code:
-        return ParentNode("pre", ParentNode("code", text_to_children(markdown[3:-3])))
+        return ParentNode("pre", [ParentNode("code", text_to_children(markdown[3:-3]))])
     if type == block_type_olist:
         items = markdown.split("\n")
         html_items = []

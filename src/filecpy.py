@@ -1,5 +1,6 @@
 import os
 import shutil
+from block_MD import *
 def Cpy_Directory(source, destination):
     if not os.path.exists(source):
         raise Exception("path to source directory does not exist")
@@ -14,3 +15,24 @@ def Cpy_Directory(source, destination):
             shutil.copy(pth, destination)
         else:
             Cpy_Directory(pth, destination+ f"/{item}")
+
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    markdown_file = open(from_path)
+    markdown_content = markdown_file.read()
+    template_file = open(template_path)
+    template_content = template_file.read()
+    template_file.close()
+    markdown_file.close()
+    html = markdown_to_html_node(markdown_content)
+    html_str = html.to_html()
+    title = extract_title(markdown_content)
+    template_content = template_content.replace("{{ Title }}", title)
+    template_content = template_content.replace("{{ Content }}", html_str)
+    path = os.path.dirname(dest_path)
+    if path != "":
+        os.makedirs(path, exist_ok=True)
+    dest_file = open(dest_path, "w")
+    dest_file.write(template_content)
+    dest_file.close()
